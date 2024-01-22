@@ -18,6 +18,10 @@ public class RegistrarUsuario extends javax.swing.JFrame {
         initComponents();
         setResizable(false);
         setSize(400, 500);
+        //valores para la pocicion
+        int x = 400;
+        int y = 100;
+        setLocation(x, y);
     }
 
     /**

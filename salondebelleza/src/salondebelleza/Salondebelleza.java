@@ -18,6 +18,9 @@ public class Salondebelleza {
         
         Login login = new Login();
        login.setVisible(true);
+       login.setSize(400, 600);
+       
+      
     }
     
 }

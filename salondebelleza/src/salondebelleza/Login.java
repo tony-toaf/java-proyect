@@ -5,6 +5,8 @@
 package salondebelleza;
 
 import Vistas.Menu;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 
 /**
  *
@@ -18,7 +20,20 @@ public class Login extends javax.swing.JFrame {
     public Login() {
         initComponents();
         setResizable(false);
-        setSize(400, 500);
+       
+        //valores para la pocicion 
+       
+        int x = 400;
+        int y = 100;
+        setLocation(x, y);
+        
+        /*
+        //otra forma de establecer la posicion
+        Dimension dimenciones = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (dimenciones.width - getWidth()/1);
+        int y = (dimenciones.height - getHeight()/2);
+        */
+       
     }
 
     /**
@@ -63,6 +78,11 @@ public class Login extends javax.swing.JFrame {
         jButton1.setForeground(new java.awt.Color(255, 51, 51));
         jButton1.setText("Olvide mis datos");
         jButton1.setBorder(null);
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setBackground(new java.awt.Color(51, 204, 0));
         jButton2.setForeground(new java.awt.Color(0, 0, 255));
@@ -110,7 +130,7 @@ public class Login extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(39, Short.MAX_VALUE))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -131,7 +151,7 @@ public class Login extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(50, Short.MAX_VALUE))
+                .addContainerGap(78, Short.MAX_VALUE))
         );
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 60, 290, 350));
@@ -152,6 +172,13 @@ public class Login extends javax.swing.JFrame {
         registrar.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        //usuario y datos olvidados
+        UsuarioOlvidado usuarioOlvidado = new UsuarioOlvidado();
+        usuarioOlvidado.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
