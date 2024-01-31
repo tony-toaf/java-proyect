@@ -5,6 +5,9 @@
 package examen_sistematica_ll;
 
 import Login.Login;
+import Login.Validando_usuario;
+import  conexionsql.Conexion;
+
 /**
  *
  * @author Usuario
@@ -16,9 +19,19 @@ public class Examen_sistematica_ll {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        
         Login login = new Login();
         login.setVisible(true);
         
+        
+        /*
+        Validando_usuario user = new Validando_usuario();
+        user.Iniciandosesion("tony", "dgfgf");
+        */
+        
     }
+    
+  
+    
     
 }

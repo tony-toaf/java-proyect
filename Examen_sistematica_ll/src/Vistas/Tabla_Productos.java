@@ -6,7 +6,9 @@ package Vistas;
 
 import java.awt.FlowLayout;
 import Login.Login;
-
+import  conexionsql.Conexion;
+import conexionsql.Inserdatos;
+import javax.swing.JOptionPane;
 /**
  *
  * @author Usuario
@@ -18,7 +20,9 @@ public class Tabla_Productos extends javax.swing.JFrame {
      */
     public Tabla_Productos() {
         initComponents();
+        
         this.setLocationRelativeTo(null);
+        
         
     }
 
@@ -94,6 +98,7 @@ public class Tabla_Productos extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMaximumSize(new java.awt.Dimension(30, 30));
         setMinimumSize(new java.awt.Dimension(40, 40));
+        setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         Titulo.setBackground(new java.awt.Color(0, 255, 0));
@@ -251,12 +256,22 @@ public class Tabla_Productos extends javax.swing.JFrame {
         botones_acciones.add(jButton2);
 
         jButton1.setText("Buscar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
         botones_acciones.add(jButton1);
 
         Actualizar.setText("Actualizar");
         botones_acciones.add(Actualizar);
 
         jButton3.setText("Insertar");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
         botones_acciones.add(jButton3);
 
         getContentPane().add(botones_acciones, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 430, 410, 50));
@@ -296,10 +311,39 @@ public class Tabla_Productos extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+       
         Login login = new Login();
         login.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        Inserdatos insertar = new  Inserdatos(); //iterando la clase
+   
+        //------------obteniendo los datos de las variables
+        int id= Integer.parseInt( txtid.getText()  );
+        int stockmaximo = Integer.parseInt(txtstockmaximo.getText());
+        int stockminimo = Integer.parseInt(txtstockminimo.getText());
+        int preciocompra= Integer.parseInt(txtpreciocompra.getText());
+        int preciounitario= Integer.parseInt(txtpreciounitario.getText());
+        String garantia = txtgarantia.getText();
+        String observaciones = txtobservaciones.getText();
+        String estado= txtestado.getText();
+        String descripsion = txtdescripsion.getText();
+       
+        
+        //codigo listo para insertar
+        insertar.Inserdatos(id, descripsion, stockminimo, stockmaximo, preciocompra,
+                preciounitario, estado, observaciones, estado); //,metodo de la clase insertar
+        
+       
+        JOptionPane.showInternalMessageDialog(null,"datos insertados correctamente");
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        Conexion conexion = new Conexion();
+        
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments

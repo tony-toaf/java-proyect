@@ -11,11 +11,11 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 public class Conexion{
-    Connection conectar; //variable que inicia la conexion
+    public Connection conectar; //variable que inicia la conexion
     
     public Conexion(){
         String url_de_la_base = "jdbc:mysql://localhost:3306/"; //ruta de done se encuetra sql con el puerto
-        String basededatos = "colegio"; //nombre de la base de datos
+        String basededatos = "productos"; //nombre de la base de datos
         String usuario = "root"; //usuario para ingresar a sql
         String Password = "";  //contrasegna para ingresar a sql
         

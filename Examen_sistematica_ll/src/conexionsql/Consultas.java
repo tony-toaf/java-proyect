@@ -19,16 +19,33 @@ public class Consultas extends Conexion{
     
     //----variables a susar para las consultas-------
     ResultSet resultado;
-    String tabla = "usuario"; //nombre de la tabla
-    String columna0 = "ID"; //nombres de las columnas que se usaran
-    String columna1 = "USERNAME";
-    String columna2 = "PASSWORD";
+    String tabla = "productos"; //nombre de la tabla
+    
+    //nombres de las columnas que se usaran
+        String columna0 = "IdProducto"; 
+        String columna1 = "Descripcion"; 
+        String columna2 = "StockMinimo";
+        String columna3 = "StockMaximo";
+        String columna4 = "PrecioCompra";
+        String columna5 = "PrecioUnitario";
+        String columna6 = "Garantia";
+        String columna7 = "Observaciones";
+        String columna8 = "Estado";
+            
     resultado = st.executeQuery("SELECT * FROM " + tabla); //consulta sql
     
     while (resultado.next()) {                
         System.out.println(resultado.getInt(columna0) + 
                 " " + resultado.getString(columna1) + 
-                " " + resultado.getString(columna2));
+                " " + resultado.getString(columna2)+ 
+                " " + resultado.getString(columna3)+ 
+                " " + resultado.getString(columna4)+ 
+                " " + resultado.getString(columna5)+ 
+                " " + resultado.getString(columna6)+ 
+                " " + resultado.getString(columna7)+ 
+                " " + resultado.getString(columna8)
+        
+        );
     }
     conexion.conectar.close(); //finalizando la conexino
 } catch (Exception e) {
