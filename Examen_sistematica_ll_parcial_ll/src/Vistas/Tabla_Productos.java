@@ -7,8 +7,7 @@ package Vistas;
 import java.awt.FlowLayout;
 import Login.Login;
 import  conexionsql.Conexion;
-import conexionsql.Productos_delete;
-import conexionsql.Productos_insert;
+import conexionsql.T_Productos;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -53,12 +52,20 @@ public class Tabla_Productos extends javax.swing.JFrame {
         String la_existencia = existencia.getText();
         int el_precio = Integer.parseInt(precio.getText());
         
+        //agredar datos a la tabla
         modelo.addRow(new Object[] {el_id, el_codigo, el_nombre, el_precio, la_existencia});
         limpiando();
+        
+        //agregar daos a la base de datos
+        T_Productos insertarproducto = new T_Productos();
+        insertarproducto.Insert(el_id, el_codigo, el_nombre, el_precio, la_existencia);
+        
     }
-    
+
    public void actualizar(){
-        int el_id = Integer.parseInt(id.getText());
+       int selectrow = tablaproductos.getSelectedRow();
+       if (selectrow!=-1) {
+           int el_id = Integer.parseInt(id.getText());
         String el_codigo = codigo.getText();
         String el_nombre = nombre.getText();
         int el_precio = Integer.parseInt(precio.getText());
@@ -71,6 +78,15 @@ public class Tabla_Productos extends javax.swing.JFrame {
         modelo.setValueAt(el_nombre, tablaproductos.getSelectedRow(), 2);
         modelo.setValueAt(el_precio, tablaproductos.getSelectedRow(), 3);
         modelo.setValueAt(la_existencia, tablaproductos.getSelectedRow(), 4);
+        
+        
+        //iniciando acutlizacion en la base de datos
+        T_Productos update = new T_Productos();
+        update.Insert(el_id, el_codigo, el_nombre, el_precio, la_existencia);
+  
+       }else{
+           JOptionPane.showInternalMessageDialog(null, "Seleccione una fila para actualizar");
+       }
         
    }
 
@@ -145,7 +161,7 @@ public class Tabla_Productos extends javax.swing.JFrame {
         Titulo.setText("Tabla Productos");
         superior.add(Titulo);
 
-        getContentPane().add(superior, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 20, 260, 30));
+        getContentPane().add(superior, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 20, 260, 30));
 
         jButton4.setText("Regresar");
         jButton4.addActionListener(new java.awt.event.ActionListener() {
@@ -155,7 +171,7 @@ public class Tabla_Productos extends javax.swing.JFrame {
         });
         getContentPane().add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, -1, 40));
 
-        jButton2.setText("Limpiar datos");
+        jButton2.setText("Limpiar Todo");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
@@ -235,10 +251,9 @@ public class Tabla_Productos extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        //funcion para limpiar
-        //utilizando el metodo limpiar
-        limpiando();
         
+        limpiando(); //para limpiar donde se inserta
+        modelo.setRowCount(0); //para limpiar los daos de la tabla
         
         
        
@@ -249,34 +264,32 @@ public class Tabla_Productos extends javax.swing.JFrame {
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
        
-        Login login = new Login();
-        login.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
        agregandodatos();
+        
 // Productos_insert insertar = new  Productos_insert(); //iterando la clase
        
        
    
-        //------------obteniendo los datos de las variables
-//        int id= Integer.parseInt( txtid.getText()  ); //usar
-//        String codigo = txtcodigo.getText();
-//        String nombre = txtnombre.getText();
-//        int precio= Integer.parseInt(txtprecio.getText());
-//        String existencia= txtexitencia.getText();
-//        
-//        //llamar al metodo que inserte
-//        Productos_insert insert = new Productos_insert();
-//        //insert.Inserdatos(id, codigo, nombre, precio, existencia);
-//        
-//        JOptionPane.showInternalMessageDialog(null,"datos insertados correctamente");
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void Actualizar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Actualizar1ActionPerformed
-        //elimnaod datos de la tabla 
-        modelo.removeRow(tablaproductos.getSelectedRow()); //para eliminar la fila
+       //eiliminando
+  
+        if (id.getText() == null || id.getText().isEmpty()) {
+             modelo.removeRow(tablaproductos.getSelectedRow()); //para eliminar la fila
+        }else{
+             try {
+            modelo.removeRow(tablaproductos.getSelectedRow());
+        } catch (Exception e) {}
+            T_Productos del = new T_Productos();
+            del.Delete(Integer.parseInt(id.getText())); //eliminando de la base  de datoss
+        }
+        
+       
         
     }//GEN-LAST:event_Actualizar1ActionPerformed
 

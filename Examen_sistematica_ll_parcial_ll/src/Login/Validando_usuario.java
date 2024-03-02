@@ -8,8 +8,8 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import javax.swing.JOptionPane;
 import Vistas.*;
-import Login.Login;
-import java.awt.Event;
+
+
 
 
 /**
@@ -17,7 +17,9 @@ import java.awt.Event;
  * @author Usuario
  */
 public class Validando_usuario extends  Conexion{
+    
     public void Iniciandosesion(String usuario, String password){ //pasandole por parametro los datos del formulario
+       
         Conexion conexion=new Conexion();
         Statement st;
         try {
@@ -42,21 +44,22 @@ public class Validando_usuario extends  Conexion{
         
     }   
     
-    if (user.equals(usuario) && pass.equals(password)) {
+   if (user.equals(usuario) && pass.equals(password)) {
     //---------------verificando que los datos sean correctos-------
     
         //procediendo a cerrar la ventana de login
-       Login login = new Login();
-       login.dispose();
-//       inciiadno la vista principal
-        Principal menu  = new Principal();
-        menu.setVisible(true);
         
+       
+       //abriendo la tabla de menu en este caso Vistas/tabla_productos
+       Principal pricipal = new Principal();
+       pricipal.setVisible(true);
         
  
     }else{
             JOptionPane.showInternalMessageDialog(null,"Datos incorrectos");
     }
+   
+  
     
     conexion.conectar.close(); //finalizando la conexino
 } catch (Exception e) {

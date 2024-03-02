@@ -3,9 +3,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package Vistas;
+import conexionsql.T_Productos;
+import conexionsql.T_Ventas;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.JOptionPane;
 /**
  *
  * @author Usuario
@@ -36,33 +39,48 @@ public class Tabla_Ventas extends javax.swing.JFrame {
     
     public void agregandodatos(){
         int el_id = Integer.parseInt(id.getText());
-        String el_cliente = cliente.getText();
-        String el_empleado = empleado.getText();
-        String el_producto = producto.getText();
-        int el_precio = Integer.parseInt(precio.getText());
-         int la_cantidad = Integer.parseInt(cantidad.getText());
-        
-        modelo.addRow(new Object[] {el_id, el_cliente, el_empleado, el_producto, el_precio, la_cantidad});
-        limpiando();
-    }
-    
-   public void actualizar(){
-        int el_id = Integer.parseInt(id.getText());
-        String el_cliente = cliente.getText();
-        String el_empleado = empleado.getText();
+        int el_cliente = Integer.parseInt(cliente.getText());
+        int el_empleado = Integer.parseInt(empleado.getText());
         String el_producto = producto.getText();
         int el_precio = Integer.parseInt(precio.getText());
         int la_cantidad = Integer.parseInt(cantidad.getText());
         
-        //verificar con un condiconal que los campos no esten vacios
-        modelo.setValueAt(el_id, tablaventas.getSelectedRow(), 0);
-        modelo.setValueAt(el_cliente, tablaventas.getSelectedRow(),1);
-        modelo.setValueAt(el_empleado, tablaventas.getSelectedRow(), 2);
-        modelo.setValueAt(el_producto, tablaventas.getSelectedRow(), 3);
-        modelo.setValueAt(el_precio, tablaventas.getSelectedRow(), 4);
-        modelo.setValueAt(la_cantidad, tablaventas.getSelectedRow(), 5);
+         //para agregar a la tabla
+        modelo.addRow(new Object[] {el_id, el_cliente, el_empleado, el_producto, el_precio, la_cantidad});
+        limpiando();
         
-   }
+        //agregand  la base de datos
+        T_Ventas insert = new T_Ventas();
+        insert.Insert(el_id, el_cliente, el_empleado, el_producto, el_precio, la_cantidad);
+        
+    }
+    
+   public void actualizar(){
+    int selectedRow = tablaventas.getSelectedRow();
+
+    if (selectedRow != -1) {
+        int el_id = Integer.parseInt(id.getText());
+        int el_cliente = Integer.parseInt(cliente.getText());
+        int el_empleado = Integer.parseInt(empleado.getText());
+        String el_producto = producto.getText();
+        int el_precio = Integer.parseInt(precio.getText());
+        int la_cantidad = Integer.parseInt(cantidad.getText());
+
+        //verificar con un condicional que los campos no estén vacíos
+        modelo.setValueAt(el_id, selectedRow, 0);
+        modelo.setValueAt(el_cliente, selectedRow, 1);
+        modelo.setValueAt(el_empleado, selectedRow, 2);
+        modelo.setValueAt(el_producto, selectedRow, 3);
+        modelo.setValueAt(el_precio, selectedRow, 4);
+        modelo.setValueAt(la_cantidad, selectedRow, 5);
+
+        //insertando valores en la base de datos de las ventas
+        T_Ventas update = new T_Ventas();
+        update.Update(el_id, el_cliente, el_empleado, el_producto, el_precio, la_cantidad);
+    } else {
+        JOptionPane.showInternalMessageDialog(null, "Por favor, selecciona una fila para actualizar.");
+    }
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -180,6 +198,7 @@ public class Tabla_Ventas extends javax.swing.JFrame {
 
     private void btnlimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnlimpiarActionPerformed
      limpiando();
+     modelo.setRowCount(0);
 
     }//GEN-LAST:event_btnlimpiarActionPerformed
 
@@ -190,8 +209,7 @@ public class Tabla_Ventas extends javax.swing.JFrame {
     }//GEN-LAST:event_btninsertarActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        Principal salir = new Principal();
-        salir.setVisible(true);
+       
         this.dispose();
        
     }//GEN-LAST:event_jButton4ActionPerformed
@@ -206,7 +224,17 @@ public class Tabla_Ventas extends javax.swing.JFrame {
     }//GEN-LAST:event_btnactualizarActionPerformed
 
     private void btneliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btneliminarActionPerformed
-      modelo.removeRow(tablaventas.getSelectedRow()); 
+      
+  
+        if (id.getText() == null || id.getText().isEmpty()) {
+             modelo.removeRow(tablaventas.getSelectedRow()); //para eliminar la fila
+        }else{
+             try {
+            modelo.removeRow(tablaventas.getSelectedRow());
+        } catch (Exception e) {}
+            T_Ventas del = new T_Ventas();
+            del.Delete(Integer.parseInt(id.getText())); //eliminando de la base  de datoss
+        }
     }//GEN-LAST:event_btneliminarActionPerformed
 
     /**

@@ -5,6 +5,9 @@
 package Vistas;
 
 import Login.Login;
+import conexionsql.T_Clientes;
+import conexionsql.T_Productos;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -45,12 +48,20 @@ public class Tabla_Clientes extends javax.swing.JFrame {
         String el_cliente = cliente.getText();
         String el_cumple = cumple.getText();
         String la_membrecia = membrecia.getText();
+        
         modelo.addRow(new Object[] {el_id, el_nombre, el_apellido, el_sexo, la_edad, el_cliente, el_cumple, la_membrecia});
         limpiando();
+        
+         //insercion en la base de  datos clientes
+        T_Clientes insertando = new T_Clientes();
+        insertando.Insert(el_id, el_nombre, el_apellido, el_sexo, el_sexo, el_cliente, el_cumple, la_membrecia);
+        
     }
     
    public void actualizar(){
-        int el_id = Integer.parseInt(id.getText());
+       int selectrow = tablaclientes.getSelectedRow();
+       if (selectrow!=-1) {
+           int el_id = Integer.parseInt(id.getText());
         String el_nombre = nombre.getText();
         String el_apellido = apellido.getText();
         String el_sexo = sexo.getText();
@@ -59,7 +70,7 @@ public class Tabla_Clientes extends javax.swing.JFrame {
         String el_cumple = cumple.getText();
         String la_membrecia = membrecia.getText();
         
-        //verificar con un condiconal que los campos no esten vacios
+        //agregando valores a la tabla
         modelo.setValueAt(el_id, tablaclientes.getSelectedRow(), 0);
         modelo.setValueAt(el_nombre, tablaclientes.getSelectedRow(),1);
         modelo.setValueAt(el_apellido, tablaclientes.getSelectedRow(), 2);
@@ -69,6 +80,15 @@ public class Tabla_Clientes extends javax.swing.JFrame {
         modelo.setValueAt(el_cumple, tablaclientes.getSelectedRow(), 6);
         modelo.setValueAt(la_membrecia, tablaclientes.getSelectedRow(), 7);
         
+        
+        //actualizando valors de la base de datos
+        T_Clientes actualizando = new T_Clientes();
+        actualizando.Update(el_id, el_nombre, el_apellido, el_sexo, el_sexo, el_cliente, el_cumple, la_membrecia);
+
+       }else{
+           JOptionPane.showInternalMessageDialog(null, "Selecione una fila para actualizar");
+           
+       }
         
    }
 
@@ -195,14 +215,20 @@ public class Tabla_Clientes extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        Principal salir = new Principal();
-        salir.setVisible(true);
         this.dispose();
       
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void eliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliminarActionPerformed
-        modelo.removeRow(tablaclientes.getSelectedRow());
+        if (id.getText() == null || id.getText().isEmpty()) {
+             modelo.removeRow(tablaclientes.getSelectedRow()); //para eliminar la fila
+        }else{
+             try {
+            modelo.removeRow(tablaclientes.getSelectedRow());
+        } catch (Exception e) {}
+            T_Clientes del = new T_Clientes();
+            del.Delete(Integer.parseInt(id.getText())); //eliminando de la base  de datoss
+        }
     }//GEN-LAST:event_eliminarActionPerformed
 
     private void ActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ActualizarActionPerformed
