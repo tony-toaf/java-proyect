@@ -8,6 +8,11 @@ import conexionsql.T_Ventas;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import javax.swing.JOptionPane;
 /**
  *
@@ -15,7 +20,9 @@ import javax.swing.JOptionPane;
  */
 public class Tabla_Ventas extends javax.swing.JFrame {
     DefaultTableModel modelo = new DefaultTableModel();
-
+    Connection conn = null;
+    PreparedStatement pst;
+    ResultSet rs;
     /**
      * Creates new form Tabla_Ventas
      */
@@ -24,8 +31,21 @@ public class Tabla_Ventas extends javax.swing.JFrame {
         String ids [] = {"Id", "Cliente", "Empleado", "Producto", "Precio","Cantiad"};
         modelo.setColumnIdentifiers(ids);
         tablaventas.setModel(modelo);
-        
+        getConnection();
     }
+    public Connection getConnection(){
+        try {
+            Class.forName("java.sql.DriverManager");
+            conn=DriverManager.getConnection("jdbc:mysql://localhost:3306/productos?useSSL=false","root","");
+            if(conn !=null){
+               System.out.println();
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            JOptionPane.showConfirmDialog(null,"Ocurrior un error al conectarse a la BD");
+            System.err.println("Error:.." + e.getMessage());
+        }
+          return conn;
+    }   
     
     
      public void limpiando(){
@@ -101,7 +121,6 @@ public class Tabla_Ventas extends javax.swing.JFrame {
         jButton4 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaventas = new javax.swing.JTable();
-        buscar = new javax.swing.JLabel();
         txtbuscar = new javax.swing.JTextField();
         cantidad = new javax.swing.JTextField();
         empleado = new javax.swing.JTextField();
@@ -109,8 +128,10 @@ public class Tabla_Ventas extends javax.swing.JFrame {
         cliente = new javax.swing.JTextField();
         id = new javax.swing.JTextField();
         precio = new javax.swing.JTextField();
+        jButton1 = new javax.swing.JButton();
+        cmbx_filtro = new javax.swing.JComboBox<>();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         Titulo.setBackground(new java.awt.Color(0, 255, 0));
@@ -152,7 +173,7 @@ public class Tabla_Ventas extends javax.swing.JFrame {
         });
         botones_acciones.add(btneliminar);
 
-        getContentPane().add(botones_acciones, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 390, 410, 50));
+        getContentPane().add(botones_acciones, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 380, 410, 50));
 
         jButton4.setText("Regresar");
         jButton4.addActionListener(new java.awt.event.ActionListener() {
@@ -176,10 +197,7 @@ public class Tabla_Ventas extends javax.swing.JFrame {
         jScrollPane1.setViewportView(tablaventas);
 
         getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 130, 644, 180));
-
-        buscar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/icons8-buscar-64.png"))); // NOI18N
-        getContentPane().add(buscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 320, -1, 60));
-        getContentPane().add(txtbuscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 340, 140, 30));
+        getContentPane().add(txtbuscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 330, 140, 30));
         getContentPane().add(cantidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 100, 110, -1));
         getContentPane().add(empleado, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 100, 100, -1));
         getContentPane().add(producto, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 100, 110, -1));
@@ -192,6 +210,23 @@ public class Tabla_Ventas extends javax.swing.JFrame {
         getContentPane().add(cliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 100, 110, -1));
         getContentPane().add(id, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 100, 110, -1));
         getContentPane().add(precio, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 100, 100, -1));
+
+        jButton1.setText("buscar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 330, 80, 30));
+
+        cmbx_filtro.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        cmbx_filtro.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "IdVenta", "IdCliente", "IdEmpleado", "NombreProducto", "Precio", "Cantidad" }));
+        cmbx_filtro.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbx_filtroActionPerformed(evt);
+            }
+        });
+        getContentPane().add(cmbx_filtro, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 330, -1, 30));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -236,6 +271,78 @@ public class Tabla_Ventas extends javax.swing.JFrame {
             del.Delete(Integer.parseInt(id.getText())); //eliminando de la base  de datoss
         }
     }//GEN-LAST:event_btneliminarActionPerformed
+     String filtro(){
+    if(cmbx_filtro.getSelectedIndex()==0){
+    return "Id";
+    }else if(cmbx_filtro.getSelectedIndex()==1){
+        return "IdCliente";
+    }else if(cmbx_filtro.getSelectedIndex()==2){
+    return "IdEmpleado";
+    }
+    else if(cmbx_filtro.getSelectedIndex()==3){
+        return "NOmbreProducto";
+    }
+    else if(cmbx_filtro.getSelectedIndex()==4){
+        return "Precio";
+    }else {
+     return "Cantidad";
+    }
+        
+    }
+    
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        if(txtbuscar.getText().isEmpty()){
+            JOptionPane.showMessageDialog(null, "Debe de ingresar el dato a buscar");
+
+        }else{
+            //Declaramos un DefaultTableModelpara enviar el nuevo modelo a la Tabla
+            DefaultTableModel modelo= (DefaultTableModel) tablaventas.getModel();
+            //Le decimos que comience en 0
+            modelo.setRowCount(0);
+            //Declaramos un arreglo para almacenar los datos
+            String[] datos= new String[5];
+
+            //Obenter el dato a bsucar
+            String dato= txtbuscar.getText().trim();
+
+            int cont=0;
+            try {
+                pst= conn.prepareStatement("select * from ventas where " + filtro() + " like '%" + dato + "%'");
+                rs=pst.executeQuery();
+
+                while(rs.next()){
+                    datos[0]=rs.getString(1);
+                    datos[1]=rs.getString(2);
+                    datos[2]=rs.getString(3);
+                    datos[4]=rs.getString(4);
+                    datos[5]=rs.getString(5);
+                    //Enviamos el vector al modelo o tabla
+                    modelo.addRow(datos);
+                    //Incementa cada vez que encuentra un valor
+                    cont++;
+                    if(cont>0){
+                        tablaventas.setModel(modelo);
+                    }else{
+                        JOptionPane.showMessageDialog(null, "No se encontro resultados en la busqueda");
+
+                    }
+                }
+            }catch ( SQLException e) {
+                JOptionPane.showMessageDialog(null,"Ocurrio un error al hacer la busqueda de los datos del usuario");
+                System.err.println("Error" + e.getMessage());
+            }finally{
+                try {
+                    pst.close();
+                } catch (Exception e) {
+                    System.err.println("Error" + e.getMessage());
+                }
+            }
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void cmbx_filtroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbx_filtroActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbx_filtroActionPerformed
 
     /**
      * @param args the command line arguments
@@ -279,11 +386,12 @@ public class Tabla_Ventas extends javax.swing.JFrame {
     private javax.swing.JButton btneliminar;
     private javax.swing.JButton btninsertar;
     private javax.swing.JButton btnlimpiar;
-    private javax.swing.JLabel buscar;
     private javax.swing.JTextField cantidad;
     private javax.swing.JTextField cliente;
+    private javax.swing.JComboBox<String> cmbx_filtro;
     private javax.swing.JTextField empleado;
     private javax.swing.JTextField id;
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField precio;

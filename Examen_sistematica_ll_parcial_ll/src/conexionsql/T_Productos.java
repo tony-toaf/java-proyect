@@ -7,17 +7,16 @@ package conexionsql;
 import java.sql.PreparedStatement;
 import javax.swing.JOptionPane;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.table.DefaultTableModel;
 /**
  *
  * @author Usuario
  */
 public class T_Productos extends  Conexion{
-    public void buscar(){
-        //pendiente de programar
-    }
-    
+  
     //fin del metodo 
     
    public void Update(int id, String nuevoCodigo, String nuevoNombre, int nuevoPrecio, String nuevaExistencia) {

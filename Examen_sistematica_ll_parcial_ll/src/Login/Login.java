@@ -47,7 +47,7 @@ public class Login extends javax.swing.JFrame {
         jButton3 = new javax.swing.JButton();
         varpass = new javax.swing.JPasswordField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMaximumSize(new java.awt.Dimension(289, 350));
         setPreferredSize(new java.awt.Dimension(330, 362));
 
@@ -191,6 +191,7 @@ public class Login extends javax.swing.JFrame {
         
         if (!user.isEmpty() && !pass.isEmpty()) { //verificando que no este vacio
             validador.Iniciandosesion(user, pass);
+            dispose();
             
         }else{
             JOptionPane.showInternalMessageDialog(null, "!Campos vacios! \nIngrese los  datos");

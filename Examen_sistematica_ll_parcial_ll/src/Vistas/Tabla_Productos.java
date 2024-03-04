@@ -8,6 +8,11 @@ import java.awt.FlowLayout;
 import Login.Login;
 import  conexionsql.Conexion;
 import conexionsql.T_Productos;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -19,7 +24,9 @@ public class Tabla_Productos extends javax.swing.JFrame {
     
     
     DefaultTableModel modelo = new DefaultTableModel();
-    
+    Connection conn = null;
+    PreparedStatement pst;
+    ResultSet rs;
     /**
      * Creates new form Tabla_Productos
      */
@@ -30,12 +37,25 @@ public class Tabla_Productos extends javax.swing.JFrame {
         modelo.setColumnIdentifiers(ids);
         tablaproductos.setModel(modelo);
         this.setLocationRelativeTo(null); //localizacion de la ventana
+        getConnection();
         
         
     }
-    public void buscar(){
-        
-    }
+    
+     public Connection getConnection(){
+        try {
+            Class.forName("java.sql.DriverManager");
+            conn=DriverManager.getConnection("jdbc:mysql://localhost:3306/productos?useSSL=false","root","");
+            if(conn !=null){
+               System.out.println();
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            JOptionPane.showConfirmDialog(null,"Ocurrior un error al conectarse a la BD");
+            System.err.println("Error:.." + e.getMessage());
+        }
+          return conn;
+    }   
+  
     
     public void limpiando(){
         id.setText("");
@@ -112,12 +132,13 @@ public class Tabla_Productos extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         tablaproductos = new javax.swing.JTable();
         txtbuscar = new javax.swing.JTextField();
-        buscar = new javax.swing.JLabel();
         existencia = new javax.swing.JTextField();
         id = new javax.swing.JTextField();
         codigo = new javax.swing.JTextField();
         nombre = new javax.swing.JTextField();
         precio = new javax.swing.JTextField();
+        cmbx_filtro = new javax.swing.JComboBox<>();
+        jButton1 = new javax.swing.JButton();
 
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
@@ -151,7 +172,7 @@ public class Tabla_Productos extends javax.swing.JFrame {
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(40, 40));
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -203,7 +224,7 @@ public class Tabla_Productos extends javax.swing.JFrame {
         });
         botones_acciones.add(Actualizar1);
 
-        getContentPane().add(botones_acciones, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 400, 410, 50));
+        getContentPane().add(botones_acciones, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 400, 410, 50));
 
         tablaproductos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -219,10 +240,13 @@ public class Tabla_Productos extends javax.swing.JFrame {
         jScrollPane2.setViewportView(tablaproductos);
 
         getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 100, 440, 240));
-        getContentPane().add(txtbuscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 350, 130, 30));
 
-        buscar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/icons8-buscar-64.png"))); // NOI18N
-        getContentPane().add(buscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 340, -1, -1));
+        txtbuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtbuscarActionPerformed(evt);
+            }
+        });
+        getContentPane().add(txtbuscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 350, 130, 30));
 
         existencia.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -246,6 +270,23 @@ public class Tabla_Productos extends javax.swing.JFrame {
             }
         });
         getContentPane().add(precio, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 70, 90, -1));
+
+        cmbx_filtro.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        cmbx_filtro.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Id", "Codigo", "Nombre", "Precio", "Existencia" }));
+        cmbx_filtro.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbx_filtroActionPerformed(evt);
+            }
+        });
+        getContentPane().add(cmbx_filtro, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 350, -1, 30));
+
+        jButton1.setText("buscar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 350, -1, 30));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -310,6 +351,79 @@ public class Tabla_Productos extends javax.swing.JFrame {
         actualizar();
     }//GEN-LAST:event_ActualizarActionPerformed
 
+    private void cmbx_filtroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbx_filtroActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbx_filtroActionPerformed
+
+    private void txtbuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtbuscarActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtbuscarActionPerformed
+    
+    String filtro(){
+    if(cmbx_filtro.getSelectedIndex()==0){
+    return "Id";
+    }else if(cmbx_filtro.getSelectedIndex()==1){
+        return "Codigo";
+    }else if(cmbx_filtro.getSelectedIndex()==2){
+    return "Nombre";
+    }
+    else if(cmbx_filtro.getSelectedIndex()==3){
+    return "Precio";
+    }else {
+     return "Existencia";
+    }
+        
+    }
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        if(txtbuscar.getText().isEmpty()){
+            JOptionPane.showMessageDialog(null, "Debe de ingresar el dato a buscar");
+        
+        }else{
+            //Declaramos un DefaultTableModelpara enviar el nuevo modelo a la Tabla
+        DefaultTableModel modelo= (DefaultTableModel) tablaproductos.getModel();
+        //Le decimos que comience en 0
+        modelo.setRowCount(0);
+        //Declaramos un arreglo para almacenar los datos
+        String[] datos= new String[4];
+        
+        //Obenter el dato a bsucar
+        String dato= txtbuscar.getText().trim();
+        
+        int cont=0;
+            try {
+                pst= conn.prepareStatement("select * from productos where " + filtro() + " like '%" + dato + "%'");
+                rs=pst.executeQuery();
+                
+                while(rs.next()){
+                datos[0]=rs.getString(1);
+                datos[1]=rs.getString(2);
+                datos[2]=rs.getString(3);
+                datos[3]=rs.getString(4);
+                //Enviamos el vector al modelo o tabla
+                modelo.addRow(datos);
+                //Incementa cada vez que encuentra un valor
+                cont++;
+                if(cont>0){
+                tablaproductos.setModel(modelo);
+                }else{
+                JOptionPane.showMessageDialog(null, "No se encontro resultados en la busqueda");
+                
+                }
+                }
+            }catch ( SQLException e) {
+                 JOptionPane.showMessageDialog(null,"Ocurrio un error al hacer la busqueda de los datos del usuario");
+                 System.err.println("Error" + e.getMessage());
+             }finally{
+                 try {
+                     pst.close();
+                 } catch (Exception e) {
+                     System.err.println("Error" + e.getMessage());
+                 }
+            }
+             }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -337,7 +451,15 @@ public class Tabla_Productos extends javax.swing.JFrame {
         }
         //</editor-fold>
 
-        /* Create and display the form */
+        /* Create int selectedIndex = cmbx_filtro.getSelectedIndex();
+    String filtroSeleccionado = filtro(selectedIndex);
+
+    if (txtbuscar.getText().isEmpty()) {
+        JOptionPane.showMessageDialog(null, "Debe ingresar el dato a buscar");
+    } else {
+        T_Productos buscando = new T_Productos();
+        buscando.buscar(filtroSeleccionado);
+    } and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new Tabla_Productos().setVisible(true);
@@ -350,10 +472,11 @@ public class Tabla_Productos extends javax.swing.JFrame {
     private javax.swing.JButton Actualizar1;
     private javax.swing.JLabel Titulo;
     private javax.swing.JPanel botones_acciones;
-    private javax.swing.JLabel buscar;
+    private javax.swing.JComboBox<String> cmbx_filtro;
     private javax.swing.JTextField codigo;
     private javax.swing.JTextField existencia;
     private javax.swing.JTextField id;
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;

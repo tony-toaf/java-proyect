@@ -7,6 +7,11 @@ package Vistas;
 import Login.Login;
 import conexionsql.T_Clientes;
 import conexionsql.T_Productos;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -16,6 +21,9 @@ import javax.swing.table.DefaultTableModel;
  */
 public class Tabla_Clientes extends javax.swing.JFrame {
     DefaultTableModel modelo = new DefaultTableModel();
+    Connection conn = null;
+    PreparedStatement pst;
+    ResultSet rs;
     
     /**
      * Creates new form Tabla_Clientes
@@ -25,7 +33,22 @@ public class Tabla_Clientes extends javax.swing.JFrame {
         String ids []= {"Id", "Nombre", "Apellido", "Sexo", "Edad", "Tipo Cliente", "F_cumple", "Membrecia"};
         modelo.setColumnIdentifiers(ids);
         tablaclientes.setModel(modelo);
+        getConnection();
     }
+    
+    public Connection getConnection(){
+        try {
+            Class.forName("java.sql.DriverManager");
+            conn=DriverManager.getConnection("jdbc:mysql://localhost:3306/productos?useSSL=false","root","");
+            if(conn !=null){
+               System.out.println();
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            JOptionPane.showConfirmDialog(null,"Ocurrior un error al conectarse a la BD");
+            System.err.println("Error:.." + e.getMessage());
+        }
+          return conn;
+    }   
     
     
     public void limpiando(){
@@ -117,10 +140,11 @@ public class Tabla_Clientes extends javax.swing.JFrame {
         edad = new javax.swing.JTextField();
         cliente = new javax.swing.JTextField();
         cumple = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
-        txtprecio2 = new javax.swing.JTextField();
+        txtbucar = new javax.swing.JTextField();
+        jButton1 = new javax.swing.JButton();
+        cmbx_filtro = new javax.swing.JComboBox<>();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         Titulo.setBackground(new java.awt.Color(0, 255, 0));
@@ -162,7 +186,7 @@ public class Tabla_Clientes extends javax.swing.JFrame {
         });
         botones_acciones.add(eliminar);
 
-        getContentPane().add(botones_acciones, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 320, 440, 50));
+        getContentPane().add(botones_acciones, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 330, 440, 50));
 
         jButton4.setText("Regresar");
         jButton4.addActionListener(new java.awt.event.ActionListener() {
@@ -197,10 +221,24 @@ public class Tabla_Clientes extends javax.swing.JFrame {
         getContentPane().add(edad, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 80, 80, -1));
         getContentPane().add(cliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 80, 80, -1));
         getContentPane().add(cumple, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 80, 80, -1));
+        getContentPane().add(txtbucar, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 280, 154, -1));
 
-        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/icons8-buscar-64.png"))); // NOI18N
-        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 260, -1, -1));
-        getContentPane().add(txtprecio2, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 280, 154, -1));
+        jButton1.setText("buscar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 280, 80, -1));
+
+        cmbx_filtro.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        cmbx_filtro.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Id", "Nombre", "Apellido", "Sexo", "Edad", "TipoCliente", "FechaCumple", "Membrecia" }));
+        cmbx_filtro.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbx_filtroActionPerformed(evt);
+            }
+        });
+        getContentPane().add(cmbx_filtro, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 280, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -234,6 +272,83 @@ public class Tabla_Clientes extends javax.swing.JFrame {
     private void ActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ActualizarActionPerformed
         actualizar();
     }//GEN-LAST:event_ActualizarActionPerformed
+    
+     String filtro(){
+    if(cmbx_filtro.getSelectedIndex()==0){
+    return "Id";
+    }else if(cmbx_filtro.getSelectedIndex()==1){
+        return "Nombre";
+    }else if(cmbx_filtro.getSelectedIndex()==2){
+    return "Apellido";
+    }else if(cmbx_filtro.getSelectedIndex()==3){
+    return "Sexo";
+    }else if(cmbx_filtro.getSelectedIndex()==4){
+    return "Edad";
+    }else if(cmbx_filtro.getSelectedIndex()==5){
+    return "TipoCliente";
+    }else if(cmbx_filtro.getSelectedIndex()==6){
+    return "FechaCumple";
+    }else {
+     return "Membrecia";
+    }
+        
+    }
+     
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        if(txtbucar.getText().isEmpty()){
+            JOptionPane.showMessageDialog(null, "Debe de ingresar el dato a buscar");
+
+        }else{
+            //Declaramos un DefaultTableModelpara enviar el nuevo modelo a la Tabla
+            DefaultTableModel modelo= (DefaultTableModel) tablaclientes.getModel();
+            //Le decimos que comience en 0
+            modelo.setRowCount(0);
+            //Declaramos un arreglo para almacenar los datos
+            String[] datos= new String[7];
+
+            //Obenter el dato a bsucar
+            String dato= txtbucar.getText().trim();
+
+            int cont=0;
+            try {
+                pst= conn.prepareStatement("select * from clientes where " + filtro() + " like '%" + dato + "%'");
+                rs=pst.executeQuery();
+
+                while(rs.next()){
+                    datos[0]=rs.getString(1);
+                    datos[1]=rs.getString(2);
+                    datos[2]=rs.getString(3);
+                    datos[4]=rs.getString(4);
+                    datos[5]=rs.getString(5);
+                    datos[6]=rs.getString(6);
+                    datos[7]=rs.getString(7);
+                    //Enviamos el vector al modelo o tabla
+                    modelo.addRow(datos);
+                    //Incementa cada vez que encuentra un valor
+                    cont++;
+                    if(cont>0){
+                        tablaclientes.setModel(modelo);
+                    }else{
+                        JOptionPane.showMessageDialog(null, "No se encontro resultados en la busqueda");
+
+                    }
+                }
+            }catch ( SQLException e) {
+                JOptionPane.showMessageDialog(null,"Ocurrio un error al hacer la busqueda de los datos del usuario");
+                System.err.println("Error" + e.getMessage());
+            }finally{
+                try {
+                    pst.close();
+                } catch (Exception e) {
+                    System.err.println("Error" + e.getMessage());
+                }
+            }
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void cmbx_filtroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbx_filtroActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbx_filtroActionPerformed
 
     /**
      * @param args the command line arguments
@@ -277,20 +392,21 @@ public class Tabla_Clientes extends javax.swing.JFrame {
     private javax.swing.JPanel botones_acciones;
     private javax.swing.JPanel botones_acciones2;
     private javax.swing.JTextField cliente;
+    private javax.swing.JComboBox<String> cmbx_filtro;
     private javax.swing.JTextField cumple;
     private javax.swing.JTextField edad;
     private javax.swing.JButton eliminar;
     private javax.swing.JTextField id;
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField membrecia;
     private javax.swing.JTextField nombre;
     private javax.swing.JTextField sexo;
     private javax.swing.JPanel superior;
     private javax.swing.JTable tablaclientes;
-    private javax.swing.JTextField txtprecio2;
+    private javax.swing.JTextField txtbucar;
     // End of variables declaration//GEN-END:variables
 }

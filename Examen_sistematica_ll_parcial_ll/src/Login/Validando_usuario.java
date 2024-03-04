@@ -56,7 +56,10 @@ public class Validando_usuario extends  Conexion{
         
  
     }else{
+            Login loging = new Login();
+            loging.setVisible(true);
             JOptionPane.showInternalMessageDialog(null,"Datos incorrectos");
+
     }
    
   
